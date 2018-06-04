@@ -1,14 +1,19 @@
 const through = require('through2');
 const TCM = require('typed-css-modules');
 
-function typeModule (options, file) {
+function typeModule (options, pluginOptions, file) {
   let creator = new TCM(options);
   return creator.create(file.path, file.contents)
     .then(content => {
-      content.resultList.unshift('export namespace style {');
-      content.resultList.push('const __undefined: boolean;');
-      content.resultList.push('}');
-      content.resultList.push('export default style;');
+      if (pluginOptions.useEnforcer) {
+        content.resultList.push('const __undefined: boolean;');
+      }
+
+      if (pluginOptions.asNamespace)  {
+        content.resultList.unshift('export namespace style {');
+        content.resultList.push('}');
+        content.resultList.push('export default style;');
+      }
 
       let newFile = file.clone();
 
@@ -20,8 +25,12 @@ function typeModule (options, file) {
 }
 
 module.exports = function (options) {
+  let pluginOptions = options.gulp;
+
+  pluginOptions = Object.assign({useEnforcer: false, asNamespace: false}, pluginOptions);
+
   return through.obj(function (file, encoding, callback) {
-    typeModule(options, file)
+    typeModule(options, pluginOptions, file)
       .then((newFile) => {
         this.push(file);
         callback(null, newFile);
