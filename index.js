@@ -5,7 +5,7 @@ function typeModule (options, pluginOptions, file) {
   let creator = new TCM(options);
   return creator.create(file.path, file.contents)
     .then(content => {
-      if (pluginOptions.useEnforcer) {
+      if (pluginOptions.addEnforcer) {
         content.resultList.push(((pluginOptions.asNamespace) ? '' : 'declare ') + 'const __undefined: boolean;');
       }
 
@@ -27,7 +27,7 @@ function typeModule (options, pluginOptions, file) {
 module.exports = function (options) {
   let pluginOptions = options.gulp;
 
-  pluginOptions = Object.assign({useEnforcer: false, asNamespace: false}, pluginOptions);
+  pluginOptions = Object.assign({addEnforcer: false, asNamespace: false}, pluginOptions);
 
   return through.obj(function (file, encoding, callback) {
     typeModule(options, pluginOptions, file)
