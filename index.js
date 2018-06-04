@@ -6,10 +6,10 @@ function typeModule (options, pluginOptions, file) {
   return creator.create(file.path, file.contents)
     .then(content => {
       if (pluginOptions.useEnforcer) {
-        content.resultList.push('const __undefined: boolean;');
+        content.resultList.push(((pluginOptions.asNamespace) ? '' : 'declare ') + 'const __undefined: boolean;');
       }
 
-      if (pluginOptions.asNamespace)  {
+      if (pluginOptions.asNamespace) {
         content.resultList.unshift('export namespace style {');
         content.resultList.push('}');
         content.resultList.push('export default style;');
