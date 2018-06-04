@@ -6,7 +6,7 @@ function typeModule (options, file) {
   return creator.create(file.path, file.contents)
     .then(content => {
       content.resultList.unshift('export namespace style {');
-      content.resultList.push('const __undefined: boolean = false;');
+      content.resultList.push('const __undefined: boolean;');
       content.resultList.push('}');
       content.resultList.push('export default style;');
 
